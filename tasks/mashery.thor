@@ -2,13 +2,20 @@ require 'rubygems'
 require 'bundler'
 Bundler.setup
 
+# XXX: only do this when the task has not been installed
+$: << 'lib'
+
+require 'mashery'
+
 module Mashery
   class CLI < Thor
     namespace :mashery
 
-    desc "hello", "Say hello"
-    def hello
-      say "Hello World!"
+    desc "echo SITE_ID, KEY, SECRET, VALUE", "Echo the provided value (tests connectivity and authentication)"
+    def echo(site_id, key, secret, value)
+      say ::Mashery.new(site_id, key, secret).echo(value)
+    rescue Exception => e
+      error(e.message)
     end
 
   protected
