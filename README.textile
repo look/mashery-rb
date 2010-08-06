@@ -1,0 +1,27 @@
+A Ruby library for the "Mashery API":http://support.mashery.com/docs/mashery_api.
+
+h2. Prerequisites
+
+Install the gem dependencies (see "gembundler.com":http://gembundler.com/ if you aren't familiar with Bundler):
+
+@$ bundle install@
+
+h2. Calling methods from the command line
+
+A set of Thor tasks are provided so that you can call API methods from the command line (read more about Thor at
+"http://github.com/wycats/thor":http://github.com/wycats/thor).
+
+The following examples assume you have Thor installed system-wide. If it's local to your bundle, then replace
+@thor@ with @bundle exec thor@.
+
+You can see all available Mashery tasks with this command:
+
+@$ thor list mashery@
+
+h3. Environment
+
+Before you can successfully call an API method, you must set these environment variables:
+
+bc. $ export MASHERY_SITE_ID=666
+$ export MASHERY_API_KEY=cafebebedeadbeefcafebebedeadbeef
+$ export MASHERY_SHARED_SECRET=blahblahblah

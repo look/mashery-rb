@@ -11,14 +11,24 @@ module Mashery
   class CLI < Thor
     namespace :mashery
 
-    desc "echo SITE_ID, KEY, SECRET, VALUE", "Echo the provided value (tests connectivity and authentication)"
-    def echo(site_id, key, secret, value)
-      say ::Mashery.new(site_id, key, secret).echo(value)
+    desc "echo VALUE", "Echo the provided value (tests connectivity and authentication)"
+    def echo(value)
+      set_up_env
+      say ::Mashery.new(@site_id, @key, @secret).echo(value)
     rescue Exception => e
       error(e.message)
     end
 
   protected
+    def set_up_env
+      @site_id = ENV['MASHERY_SITE_ID'] or
+        raise Exception, "Please set the MASHERY_SITE_ID environment variable."
+      @key = ENV['MASHERY_API_KEY'] or
+        raise Exception, "Please set the MASHERY_API_KEY environment variable."
+      @secret = ENV['MASHERY_SHARED_SECRET'] or
+        raise Exception, "Please set the MASHERY_SHARED_SECRET environment variable."
+    end
+
     def warn
       say_status :WARN, msg, :yellow
     end
