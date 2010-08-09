@@ -31,11 +31,17 @@ protected
   end
 
   def call_remote(method, *params)
-    # all calls are synchronous
-    id = 1
-    body = ActiveSupport::JSON.encode({:method => method, :params => params, :id => id})
-    response = HTTParty.post(signed_uri, :body => body)
-    raise Exception, "#{method} call to #{@uri} failed: #{response.message}" unless response.code == 200
-    response.body
+    # all calls are synchronous, so id in request and response will always be 1
+    req = ActiveSupport::JSON.encode({:version => '1.1', :method => method, :params => params, :id => 1})
+    response = HTTParty.post(signed_uri, :body => req)
+    res = ActiveSupport::JSON.decode(response.body)
+    raise MasheryJsonRpcException.new(res['error']['code'], res['error']['message']) if res.include?('error')
+    res['result']
+  end
+end
+
+class MasheryJsonRpcException < Exception
+  def initialize(code, msg)
+    super("#{msg} (JSON-RPC error #{code})")
   end
 end
