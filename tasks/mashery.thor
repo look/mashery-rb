@@ -13,20 +13,24 @@ module Mashery
 
     desc "echo VALUE", "Echo the provided value (tests connectivity and authentication)"
     def echo(value)
-      set_up_env
-      say ::Mashery.new(@site_id, @key, @secret).echo(value)
-    rescue Exception => e
-      error(e.message)
+      run do
+        say ::Mashery::Client.new(@site_id, @key, @secret).echo(value)
+      end
     end
 
   protected
-    def set_up_env
+    def run(&block)
       @site_id = ENV['MASHERY_SITE_ID'] or
         raise Exception, "Please set the MASHERY_SITE_ID environment variable."
       @key = ENV['MASHERY_API_KEY'] or
         raise Exception, "Please set the MASHERY_API_KEY environment variable."
       @secret = ENV['MASHERY_SHARED_SECRET'] or
         raise Exception, "Please set the MASHERY_SHARED_SECRET environment variable."
+      begin
+        yield
+      rescue ::Mashery::JsonRpcException
+        error(e.message)
+      end
     end
 
     def warn
