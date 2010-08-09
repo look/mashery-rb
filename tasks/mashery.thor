@@ -89,4 +89,39 @@ module Mashery
       end
     end
   end
+
+    class KeyCLI < CLI
+      namespace 'mashery:key'
+
+      desc "create SERVICE_KEY USERNAME [--fields ...]", "Create a key"
+      method_option :fields, :type => :hash
+      def create(service_key, username)
+        run do
+          key = ::Mashery::Key.create(client, service_key, username, options[:fields])
+          ok("Key #{key.id} created for member #{username} and service #{service_key}")
+#          debug(key.to_yaml)
+        end
+      end
+
+      desc "fetch ID", "Fetch a key"
+      def fetch(id)
+        run do
+          key = ::Mashery::Key.fetch(client, id.to_i)
+          if key
+            ok("Key #{id} found")
+            say(key.to_yaml)
+          else
+            warn("Key #{id} not found")
+          end
+        end
+      end
+
+      desc "delete ID", "Delete a key"
+      def delete(id)
+        run do
+          ::Mashery::Key.delete(client, id.to_i)
+          ok("Key #{id} deleted")
+        end
+      end
+    end
 end

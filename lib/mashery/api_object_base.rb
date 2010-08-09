@@ -16,5 +16,9 @@ module Mashery
     def self.method(basename)
       "#{name.split(/\:\:/).last.downcase}.#{basename}"
     end
+
+    def initialize(data)
+      data.each_pair {|k, v| instance_variable_set("@#{k}".to_sym, v)}
+    end
   end
 end
