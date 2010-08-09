@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
     ".gitignore",
      "Gemfile",
      "README.textile",
+     "Rakefile",
      "VERSION",
      "lib/mashery.rb",
      "lib/mashery/api_object_base.rb",
@@ -25,6 +26,7 @@ Gem::Specification.new do |s|
      "lib/mashery/exceptions.rb",
      "lib/mashery/key.rb",
      "lib/mashery/member.rb",
+     "mashery.gemspec",
      "tasks/mashery.thor"
   ]
   s.homepage = %q{http://github.com/outsidein/mashery-rb}
