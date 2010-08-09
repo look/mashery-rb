@@ -13,9 +13,7 @@ module Mashery
 
     desc "echo VALUE", "Echo the provided value (tests connectivity and authentication)"
     def echo(value)
-      run do
-        say ::Mashery::Client.new(@site_id, @key, @secret).echo(value)
-      end
+      run { ok(client.echo(value)) }
     end
 
   protected
@@ -28,12 +26,19 @@ module Mashery
         raise Exception, "Please set the MASHERY_SHARED_SECRET environment variable."
       begin
         yield
-      rescue ::Mashery::JsonRpcException
+      rescue ::Mashery::JsonRpcException => e
         error(e.message)
+      rescue ::Mashery::ValidationException => e
+        e.errors.each {|err| warn("#{err['field']}: #{err['message']}")}
+        error("Unable to execute method due to validation errors")
       end
     end
 
-    def warn
+    def client
+      ::Mashery::Client.new(@site_id, @key, @secret)
+    end
+
+    def warn(msg)
       say_status :WARN, msg, :yellow
     end
 
@@ -47,6 +52,28 @@ module Mashery
 
     def debug(msg)
       say_status :DEBUG, msg, :cyan
+    end
+  end
+
+  class MemberCLI < CLI
+    namespace 'mashery:member'
+
+    desc "create --fields username:USERNAME display_name:'DISPLAY NAME' email:EMAIL [...]", "Create a member"
+    method_option :fields, :type => :hash, :required => true
+    def create
+      run do
+        member = ::Mashery::Member.create(client, options[:fields])
+        ok("Member #{member.username} created")
+        debug(member.to_yaml)
+      end
+    end
+
+    desc "delete USERNAME", "Delete a member"
+    def delete(username)
+      run do
+        ::Mashery::Member.delete(client, username)
+        ok("Member #{username} deleted")
+      end
     end
   end
 end

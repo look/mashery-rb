@@ -26,24 +26,19 @@ module Mashery
       call_remote('test.echo', value)
     end
 
-  protected
-    def signed_uri
-      "#{@uri}?apikey=#{@key}&sig=#{MD5.new(@key + @secret + Time.now.to_i.to_s).hexdigest}"
-    end
-
     def call_remote(method, *params)
       # all calls are synchronous, so id in request and response will always be 1
+#      puts "method: #{method} params: #{params.inspect}"
       req = ActiveSupport::JSON.encode({:version => '1.1', :method => method, :params => params, :id => 1})
       response = HTTParty.post(signed_uri, :body => req)
       res = ActiveSupport::JSON.decode(response.body)
-      raise MasheryJsonRpcException.new(res['error']) if res.include?('error')
+      raise Exception.create(res['error']) if res.include?('error')
       res['result']
     end
-  end
 
-  class JsonRpcException < Exception
-    def initialize(hash)
-      super("#{hash['message']} (JSON-RPC error #{hash['code']})")
+  protected
+    def signed_uri
+      "#{@uri}?apikey=#{@key}&sig=#{MD5.new(@key + @secret + Time.now.to_i.to_s).hexdigest}"
     end
   end
 end
