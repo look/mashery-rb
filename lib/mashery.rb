@@ -35,13 +35,13 @@ protected
     req = ActiveSupport::JSON.encode({:version => '1.1', :method => method, :params => params, :id => 1})
     response = HTTParty.post(signed_uri, :body => req)
     res = ActiveSupport::JSON.decode(response.body)
-    raise MasheryJsonRpcException.new(res['error']['code'], res['error']['message']) if res.include?('error')
+    raise MasheryJsonRpcException.new(res['error']) if res.include?('error')
     res['result']
   end
 end
 
 class MasheryJsonRpcException < Exception
-  def initialize(code, msg)
-    super("#{msg} (JSON-RPC error #{code})")
+  def initialize(hash)
+    super("#{hash['message']} (JSON-RPC error #{hash['code']})")
   end
 end
