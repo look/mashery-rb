@@ -58,11 +58,11 @@ module Mashery
   class MemberCLI < CLI
     namespace 'mashery:member'
 
-    desc "create --fields username:USERNAME display_name:'DISPLAY NAME' email:EMAIL [...]", "Create a member"
-    method_option :fields, :type => :hash, :required => true
-    def create
+    desc "create USERNAME DISPLAY_NAME EMAIL [--fields ...]", "Create a member"
+    method_option :fields, :type => :hash
+    def create(username, display_name, email)
       run do
-        member = ::Mashery::Member.create(client, options[:fields])
+        member = ::Mashery::Member.create(client, username, display_name, email, options[:fields])
         ok("Member #{member.username} created")
 #        debug(member.to_yaml)
       end
@@ -90,38 +90,38 @@ module Mashery
     end
   end
 
-    class KeyCLI < CLI
-      namespace 'mashery:key'
+  class KeyCLI < CLI
+    namespace 'mashery:key'
 
-      desc "create SERVICE_KEY USERNAME [--fields ...]", "Create a key"
-      method_option :fields, :type => :hash
-      def create(service_key, username)
-        run do
-          key = ::Mashery::Key.create(client, service_key, username, options[:fields])
-          ok("Key #{key.id} created for member #{username} and service #{service_key}")
+    desc "create SERVICE_KEY USERNAME [--fields ...]", "Create a key"
+    method_option :fields, :type => :hash
+    def create(service_key, username)
+      run do
+        key = ::Mashery::Key.create(client, service_key, username, options[:fields])
+        ok("Key #{key.id} created for member #{username} and service #{service_key}")
 #          debug(key.to_yaml)
-        end
       end
+    end
 
-      desc "fetch ID", "Fetch a key"
-      def fetch(id)
-        run do
-          key = ::Mashery::Key.fetch(client, id.to_i)
-          if key
-            ok("Key #{id} found")
-            say(key.to_yaml)
-          else
-            warn("Key #{id} not found")
-          end
-        end
-      end
-
-      desc "delete ID", "Delete a key"
-      def delete(id)
-        run do
-          ::Mashery::Key.delete(client, id.to_i)
-          ok("Key #{id} deleted")
+    desc "fetch ID", "Fetch a key"
+    def fetch(id)
+      run do
+        key = ::Mashery::Key.fetch(client, id.to_i)
+        if key
+          ok("Key #{id} found")
+          say(key.to_yaml)
+        else
+          warn("Key #{id} not found")
         end
       end
     end
+
+    desc "delete ID", "Delete a key"
+    def delete(id)
+      run do
+        ::Mashery::Key.delete(client, id.to_i)
+        ok("Key #{id} deleted")
+      end
+    end
+  end
 end
