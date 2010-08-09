@@ -4,19 +4,17 @@ require 'md5'
 
 module Mashery
   class Client
+    cattr_accessor :test_mode, :instance_writer => false
     @@test_mode = true
-    def self.test_mode?
-      @@test_mode
-    end
-    def self.test_mode=(flag)
-      @@test_mode = flag
-    end
+
+    cattr_accessor :logger, :instance_writer => false
+    @@logger = nil
 
     TEST_HOST = 'api.sandbox.mashery.com'
     PRODUCTION_HOST= 'api.mashery.com'
 
     def initialize(site_id, key, secret)
-      host = self.class.test_mode?? TEST_HOST : PRODUCTION_HOST
+      host = self.class.test_mode ? TEST_HOST : PRODUCTION_HOST
       @uri = "http://#{host}/v2/json-rpc/#{site_id}"
       @key = key
       @secret = secret
@@ -28,7 +26,7 @@ module Mashery
 
     def call_remote(method, *params)
       # all calls are synchronous, so id in request and response will always be 1
-#      puts "method: #{method} params: #{params.inspect}"
+      logger.debug "method: #{method} params: #{params.inspect}" if logger
       req = ActiveSupport::JSON.encode({:version => '1.1', :method => method, :params => params, :id => 1})
       response = HTTParty.post(signed_uri, :body => req)
       res = ActiveSupport::JSON.decode(response.body)
