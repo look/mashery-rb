@@ -64,7 +64,20 @@ module Mashery
       run do
         member = ::Mashery::Member.create(client, options[:fields])
         ok("Member #{member.username} created")
-        debug(member.to_yaml)
+#        debug(member.to_yaml)
+      end
+    end
+
+    desc "fetch USERNAME", "Fetch a member"
+    def fetch(username)
+      run do
+        member = ::Mashery::Member.fetch(client, username)
+        if member
+          ok("Member #{username} found")
+          say(member.to_yaml)
+        else
+          warn("Member #{username} not found")
+        end
       end
     end
 
