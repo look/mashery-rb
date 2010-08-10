@@ -1,4 +1,5 @@
 require 'active_support'
+require 'json'
 require 'httparty'
 require 'md5'
 
@@ -8,7 +9,8 @@ module Mashery
     @@test_mode = true
 
     cattr_accessor :logger, :instance_writer => false
-    @@logger = nil
+    @@logger = Logger.new(STDOUT)
+    @@logger.level = Logger::DEBUG
 
     TEST_HOST = 'api.sandbox.mashery.com'
     PRODUCTION_HOST= 'api.mashery.com'
@@ -27,9 +29,9 @@ module Mashery
     def call_remote(method, *params)
       # all calls are synchronous, so id in request and response will always be 1
       logger.debug "method: #{method} params: #{params.inspect}" if logger
-      req = ActiveSupport::JSON.encode({:version => '1.1', :method => method, :params => params, :id => 1})
+      req = ::JSON[{:version => '1.1', :method => method, :params => params, :id => 1}]
       response = HTTParty.post(signed_uri, :body => req)
-      res = ActiveSupport::JSON.decode(response.body)
+      res = ::JSON[response.body]
       raise Exception.create(res['error']) if res.include?('error')
       res['result']
     end
