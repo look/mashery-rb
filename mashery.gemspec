@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mashery}
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brian Moseley"]
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "lib/mashery/exceptions.rb",
      "lib/mashery/key.rb",
      "lib/mashery/member.rb",
+     "lib/mashery/role.rb",
      "mashery.gemspec",
      "tasks/mashery.thor"
   ]
