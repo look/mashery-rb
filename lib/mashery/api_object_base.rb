@@ -1,6 +1,7 @@
 module Mashery
   class ApiObjectBase
     def self.create(fields = {})
+      # XXX: only send fields that aren't read-only
       new(Mashery.client.call_remote(method('create'), fields))
     end
 
@@ -18,6 +19,7 @@ module Mashery
     end
 
     def initialize(data)
+      # XXX: use setter methods
       data.each_pair {|k, v| instance_variable_set("@#{k}".to_sym, v)}
     end
   end

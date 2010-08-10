@@ -82,6 +82,42 @@ module Mashery
       end
     end
 
+    desc "addrole USERNAME ROLE_ID", "Assign a role to a member"
+    def addrole(username, role_id)
+      run do
+        member = ::Mashery::Member.fetch(username)
+        if member
+          role = ::Mashery::Role.fetch(role_id.to_i)
+          if role
+            member.add_role(role)
+            ok("Role #{role.name} assigned to member #{username}")
+          else
+            warn("Role #{role_id} not found")
+          end
+        else
+          warn("Member #{username} not found")
+        end
+      end
+    end
+
+    desc "rmrole USERNAME ROLE_ID", "Revoke a role from a member"
+    def rmrole(username, role_id)
+      run do
+        member = ::Mashery::Member.fetch(username)
+        if member
+          role = ::Mashery::Role.fetch(role_id.to_i)
+          if role
+            member.remove_role(role)
+            ok("Role #{role.name} revoked from member #{username}")
+          else
+            warn("Role #{role_id} not found")
+          end
+        else
+          warn("Member #{username} not found")
+        end
+      end
+    end
+
     desc "delete USERNAME", "Delete a member"
     def delete(username)
       run do
@@ -121,6 +157,40 @@ module Mashery
       run do
         ::Mashery::Key.delete(id.to_i)
         ok("Key #{id} deleted")
+      end
+    end
+  end
+
+  class RoleCLI < CLI
+    namespace 'mashery:role'
+
+    desc "create NAME [--fields ...]", "Create a role"
+    method_option :fields, :type => :hash
+    def create(name)
+      run do
+        role = ::Mashery::Role.create(name, options[:fields])
+        ok("Role #{role.id} created with name #{name}")
+      end
+    end
+
+    desc "fetch ID", "Fetch a role"
+    def fetch(id)
+      run do
+        role = ::Mashery::Role.fetch(id.to_i)
+        if role
+          ok("Role #{id} found")
+          say(role.to_yaml)
+        else
+          warn("Role #{id} not found")
+        end
+      end
+    end
+
+    desc "delete ID", "Delete a role"
+    def delete(id)
+      run do
+        ::Mashery::Role.delete(id.to_i)
+        ok("Role #{id} deleted")
       end
     end
   end
