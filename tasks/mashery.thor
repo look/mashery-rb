@@ -13,17 +13,19 @@ module Mashery
 
     desc "echo VALUE", "Echo the provided value (tests connectivity and authentication)"
     def echo(value)
-      run { ok(client.echo(value)) }
+      run { ok(::Mashery.client.echo(value)) }
     end
 
   protected
     def run(&block)
-      @site_id = ENV['MASHERY_SITE_ID'] or
+      site_id = ENV['MASHERY_SITE_ID'] or
         raise Exception, "Please set the MASHERY_SITE_ID environment variable."
-      @key = ENV['MASHERY_API_KEY'] or
+      key = ENV['MASHERY_API_KEY'] or
         raise Exception, "Please set the MASHERY_API_KEY environment variable."
-      @secret = ENV['MASHERY_SHARED_SECRET'] or
+      secret = ENV['MASHERY_SHARED_SECRET'] or
         raise Exception, "Please set the MASHERY_SHARED_SECRET environment variable."
+      ::Mashery.client = ::Mashery::Client.new(site_id, key, secret)
+      ::Mashery.logger.level = Logger::DEBUG
       begin
         yield
       rescue ::Mashery::JsonRpcException => e
@@ -32,10 +34,6 @@ module Mashery
         e.errors.each {|err| warn("#{err['field']}: #{err['message']}")}
         error("Unable to execute method due to validation errors")
       end
-    end
-
-    def client
-      ::Mashery::Client.new(@site_id, @key, @secret)
     end
 
     def warn(msg)
@@ -62,7 +60,7 @@ module Mashery
     method_option :fields, :type => :hash
     def create(username, display_name, email)
       run do
-        member = ::Mashery::Member.create(client, username, display_name, email, options[:fields])
+        member = ::Mashery::Member.create(username, display_name, email, options[:fields])
         ok("Member #{member.username} created")
 #        debug(member.to_yaml)
       end
@@ -71,7 +69,7 @@ module Mashery
     desc "fetch USERNAME", "Fetch a member"
     def fetch(username)
       run do
-        member = ::Mashery::Member.fetch(client, username)
+        member = ::Mashery::Member.fetch(username)
         if member
           ok("Member #{username} found")
           say(member.to_yaml)
@@ -84,7 +82,7 @@ module Mashery
     desc "delete USERNAME", "Delete a member"
     def delete(username)
       run do
-        ::Mashery::Member.delete(client, username)
+        ::Mashery::Member.delete(username)
         ok("Member #{username} deleted")
       end
     end
@@ -97,7 +95,7 @@ module Mashery
     method_option :fields, :type => :hash
     def create(service_key, username)
       run do
-        key = ::Mashery::Key.create(client, service_key, username, options[:fields])
+        key = ::Mashery::Key.create(service_key, username, options[:fields])
         ok("Key #{key.id} created for member #{username} and service #{service_key}")
 #          debug(key.to_yaml)
       end
@@ -106,7 +104,7 @@ module Mashery
     desc "fetch ID", "Fetch a key"
     def fetch(id)
       run do
-        key = ::Mashery::Key.fetch(client, id.to_i)
+        key = ::Mashery::Key.fetch(id.to_i)
         if key
           ok("Key #{id} found")
           say(key.to_yaml)
@@ -119,7 +117,7 @@ module Mashery
     desc "delete ID", "Delete a key"
     def delete(id)
       run do
-        ::Mashery::Key.delete(client, id.to_i)
+        ::Mashery::Key.delete(id.to_i)
         ok("Key #{id} deleted")
       end
     end

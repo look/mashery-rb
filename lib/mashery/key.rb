@@ -4,10 +4,10 @@ module Mashery
     attr_accessor :apikey, :status, :rate_limit_ceiling, :qps_limit_ceiling, :rate_limit_exempt, :qps_limit_exempt,
       :required_referer, :secret
 
-    def self.create(client, service_key, username, fields = {})
+    def self.create(service_key, username, fields = {})
       fields ||= {}
       our_fields = fields.merge('service' => {'service_key' => service_key}, 'member' => {'username' => username})
-      super(client, our_fields)
+      super(our_fields)
     end
 
     def initialize(data)

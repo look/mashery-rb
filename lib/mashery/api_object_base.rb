@@ -1,16 +1,16 @@
 module Mashery
   class ApiObjectBase
-    def self.create(client, fields = {})
-      new(client.call_remote(method('create'), fields))
+    def self.create(fields = {})
+      new(Mashery.client.call_remote(method('create'), fields))
     end
 
-    def self.fetch(client, id)
-      data = client.call_remote(method('fetch'), id)
+    def self.fetch(id)
+      data = Mashery.client.call_remote(method('fetch'), id)
       data.nil?? nil : new(data)
     end
 
-    def self.delete(client, id)
-      client.call_remote(method('delete'), id)
+    def self.delete(id)
+      Mashery.client.call_remote(method('delete'), id)
     end
 
     def self.method(basename)
