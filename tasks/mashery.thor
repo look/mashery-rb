@@ -60,9 +60,12 @@ module Mashery
     method_option :fields, :type => :hash
     def create(username, display_name, email)
       run do
-        member = ::Mashery::Member.create(username, display_name, email, options[:fields])
-        ok("Member #{member.username} created")
-#        debug(member.to_yaml)
+        begin
+          member = ::Mashery::Member.create(username, display_name, email, options[:fields])
+          ok("Member #{member.username} created")
+        rescue ::Mashery::DuplicateObjectException
+          error("The username #{username} has already been claimed")
+        end
       end
     end
 
@@ -97,7 +100,6 @@ module Mashery
       run do
         key = ::Mashery::Key.create(service_key, username, options[:fields])
         ok("Key #{key.id} created for member #{username} and service #{service_key}")
-#          debug(key.to_yaml)
       end
     end
 
