@@ -12,12 +12,12 @@ module Mashery
     end
 
     def add_role(role_or_id)
-      role_id = role_or_id.respond_to?(:id) ? role_or_id.id : role_or_id
+      role_id = role_or_id.is_a?(Role) ? role_or_id.id : role_or_id
       Mashery.client.call_remote('member.addRole', {'username' => username}, {'id' => role_id})
     end
 
     def remove_role(role_or_id)
-      role_id = role_or_id.respond_to?(:id) ? role_or_id.id : role_or_id
+      role_id = role_or_id.is_a?(Role) ? role_or_id.id : role_or_id
       Mashery.client.call_remote('member.removeRole', {'username' => username}, {'id' => role_id})
     end
   end
