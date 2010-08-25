@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/mashery/key.rb",
      "lib/mashery/member.rb",
      "lib/mashery/role.rb",
+     "lib/mashery/query.rb",
      "mashery.gemspec",
      "tasks/mashery.thor"
   ]

@@ -4,6 +4,7 @@ require 'mashery/api_object_base'
 require 'mashery/member'
 require 'mashery/key'
 require 'mashery/role'
+require 'mashery/query'
 
 module Mashery
   mattr_accessor :client

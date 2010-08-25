@@ -25,3 +25,27 @@ Before you can successfully call an API method, you must set these environment v
 bc. $ export MASHERY_SITE_ID=666
 $ export MASHERY_API_KEY=cafebebedeadbeefcafebebedeadbeef
 $ export MASHERY_SHARED_SECRET=blahblahblah
+
+h3. Querying objects
+
+The Mashery API supports querying the following types of objects: "members":http://support.mashery.com/docs/mashery_api/member/, "applications":http://support.mashery.com/docs/mashery_api/application/, "keys":http://support.mashery.com/docs/mashery_api/key/, "services":http://support.mashery.com/docs/mashery_api/service/, and "roles":http://support.mashery.com/docs/mashery_api/role/.
+
+To perform a query, construct a Query object for the type of object you want to query:
+
+bc. query = Mashery::Query.new('members')
+members = query.fetch_all
+
+The @fetch_all@ method will automatically paginate through the results for you. You can also control this yourself with the @page@ parameter and @execute@:
+
+bc. query = Mashery::Query.new('members', :page => 2)
+result = query.execute
+items = result['items']
+
+(Or, use the @items@ method, which combines @execute@ and @result['items']@ -- however, this does not return result set metadata, like current page and total pages.)
+
+The default will return all fields (e.g., @SELECT * FROM members@). To control this, specify the @:fields@ parameter.
+
+To control which records are returned, specify the @:where@ parameter.
+
+bc. query = Mashery::Query.new('members', :where => 'username = "Jeff"'
+
