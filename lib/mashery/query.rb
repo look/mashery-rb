@@ -1,6 +1,6 @@
 module Mashery
   class Query
-    OBJECT_TYPES = ['members', 'keys', 'services', 'roles']
+    OBJECT_TYPES = ['members', 'keys', 'services', 'roles', 'applications']
     DEFAULT_QUERIES_PER_SECOND = 2
 
     attr_reader :object_type, :fields
@@ -8,7 +8,7 @@ module Mashery
 
     def initialize(object_type, options={})
       if !OBJECT_TYPES.include?(object_type)
-        raise "Invalid object type. '#{object_type}' must be in #{OBJECT_TYPE.inspect}"
+        raise "Invalid object type. '#{object_type}' must be in #{OBJECT_TYPES.inspect}"
       end
 
       @object_type = object_type
